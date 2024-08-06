@@ -17,5 +17,5 @@
 4. Alternatively, you can run the compiled `.exe` file without installing AutoHotkey.
 
 ## Usage
-1.Run either the `SnapTap.ahk` script, the self-compiled exe, or the precompiled exe provided.
-2.To exit the script, right-click the AutoHotkey icon in the system tray and select "Exit".
+1. Run either the `SnapTap.ahk` script, the self-compiled exe, or the precompiled exe provided.
+2. To exit the script, right-click the AutoHotkey icon in the system tray and select "Exit".
