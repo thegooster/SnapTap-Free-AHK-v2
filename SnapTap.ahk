@@ -1,49 +1,69 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+InstallKeybdHook
 #UseHook
+#MaxThreadsPerHotkey 1
 SetWorkingDir A_ScriptDir
 KeyHistory 0
 ListLines False
-SetControlDelay -1
 SetKeyDelay -1, -1
 SendMode "Input"
 ProcessSetPriority "High"
+A_MaxHotkeysPerInterval := 99000000
+MyCurrentTimerResolution := 0
+DllCall("ntdll\ZwSetTimerResolution", "Int", 5000, "Int", 1, "Int*", &MyCurrentTimerResolution)
 
-global lastKey := ""
-global aKey := false
-global dKey := false
+global aKeyState := 0
+global dKeyState := 0
 
 $a::
-$d::
 {
+    global aKeyState, dKeyState
     Critical
-    global lastKey, aKey, dKey
-    thisHotkey := A_ThisHotkey
-    currentKey := SubStr(thisHotkey, 2)
-    if (currentKey != lastKey) {
-        if (lastKey)
-            Send "{" lastKey " up}"
-        Send "{" currentKey " down}"
-        lastKey := currentKey
+    if (aKeyState == 0) {
+        Send "{a down}"
+        aKeyState := 1
+        if (dKeyState == 1) {
+            Send "{d up}"
+        }
     }
-    %currentKey%Key := true
 }
 
 $a up::
+{
+    global aKeyState, dKeyState
+    Critical
+    if (aKeyState == 1) {
+        Send "{a up}"
+        aKeyState := 0
+        if (dKeyState == 1) {
+            Send "{d down}"
+        }
+    }
+}
+
+$d::
+{
+    global aKeyState, dKeyState
+    Critical
+    if (dKeyState == 0) {
+        Send "{d down}"
+        dKeyState := 1
+        if (aKeyState == 1) {
+            Send "{a up}"
+        }
+    }
+}
+
 $d up::
 {
+    global aKeyState, dKeyState
     Critical
-    global lastKey, aKey, dKey
-    thisHotkey := A_ThisHotkey
-    currentKey := SubStr(thisHotkey, 2, 1)
-    %currentKey%Key := false
-    otherKey := (currentKey = "a") ? "d" : "a"
-    
-    if (%otherKey%Key) {
-        Send "{" currentKey " up}{" otherKey " down}"
-        lastKey := otherKey
-    } else {
-        Send "{" currentKey " up}"
-        lastKey := ""
+    if (dKeyState == 1) {
+        Send "{d up}"
+        dKeyState := 0
+        if (aKeyState == 1) {
+            Send "{a down}"
+        }
     }
 }
